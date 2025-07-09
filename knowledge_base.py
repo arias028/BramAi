@@ -124,18 +124,66 @@ def forget_fact(fact_text, vector_database):
         print(f"   My closest guess was: '{best_match_content}'")
         print("   Nothing was deleted.")
 
-def handle_correction(correction_text, vector_database):
+def handle_correction(last_question, correction_text, vector_database):
     """
-    Handles user corrections by offering to learn the new information.
+    Handles user corrections. It finds the chunk that was most likely responsible
+    for the wrong answer to the last question and offers to replace it.
     """
     print("✍️ It looks like you're correcting me.")
     print(f"   New information provided: '{correction_text}'")
+
+    if not last_question:
+        print("\n   I don't have the context of the last question. I'll learn this as new information.")
+        learn_new_fact(correction_text, vector_database)
+        return
+
+    # Find the chunk that was most relevant to the last question.
+    question_embedding = llm_service.get_embedding(last_question, config.EMBEDDING_MODEL)
+    if not question_embedding:
+        print("\n   Could not process the last question. I'll learn this as new information.")
+        learn_new_fact(correction_text, vector_database)
+        return
+
+    similarities = []
+    for i, chunk in enumerate(vector_database):
+        score = cosine_similarity(question_embedding, chunk["vector"])
+        similarities.append((score, i, chunk["content"]))
+    
+    similarities.sort(key=lambda x: x[0], reverse=True)
+
+    if not similarities:
+        print("\n   The knowledge base is empty. Learning as new info.")
+        learn_new_fact(correction_text, vector_database)
+        return
+
+    best_match_score, best_match_index, best_match_content = similarities[0]
+
+    print(f"\n   I think this correction relates to the following fact in my knowledge:")
+    print(f"   '{best_match_content}'")
+    print(f"\n   Should I replace this fact with the new information you provided?")
     
     try:
-        confirmation = input("   Should I learn this new information? (yes/no): ").lower().strip()
+        confirmation = input("   (yes/no): ").lower().strip()
         if confirmation == 'yes':
-            learn_new_fact(correction_text, vector_database)
+            new_embedding = llm_service.get_embedding(correction_text, config.EMBEDDING_MODEL)
+            if not new_embedding:
+                print("❌ I'm sorry, I had trouble understanding the new information. Nothing was changed.")
+                return
+
+            original_source = vector_database[best_match_index]['source']
+            vector_database[best_match_index] = {
+                "source": original_source,
+                "content": correction_text,
+                "vector": new_embedding
+            }
+            print("✅ Okay, I've updated my knowledge.")
+            save_vector_database(vector_database)
         else:
-            print("👍 Okay, I won't learn that. Thanks for the feedback!")
+            print("\n   Okay, I won't replace it. Would you like me to learn it as a completely new fact?")
+            learn_as_new_confirmation = input("   (yes/no): ").lower().strip()
+            if learn_as_new_confirmation == 'yes':
+                learn_new_fact(correction_text, vector_database)
+            else:
+                print("👍 Okay, correction cancelled.")
     except (KeyboardInterrupt, EOFError):
         print("\n👍 Correction cancelled.") 

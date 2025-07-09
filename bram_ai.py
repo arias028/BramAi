@@ -27,6 +27,7 @@ def main():
     print("You can now ask questions or use commands: 'learn:', 'koreksi:', 'forget:', or 'ringkas: [text]'")
     
     conversation_history = []
+    last_user_input = ""
 
     while True:
         try:
@@ -56,7 +57,7 @@ def main():
         elif user_input.lower().startswith("koreksi:"):
             fact_to_correct = user_input[len("koreksi:"):].strip()
             if fact_to_correct:
-                knowledge_base.handle_correction(fact_to_correct, vector_database)
+                knowledge_base.handle_correction(last_user_input, fact_to_correct, vector_database)
             else:
                 print("🤖 Please provide the correct information after 'koreksi:'.")
         
@@ -68,6 +69,7 @@ def main():
                 print("🤖 Please provide the text you want me to summarize after 'ringkas:'.")
 
         else:
+            last_user_input = user_input
             language = detect_language(user_input)
             question_embedding = llm_service.get_embedding(user_input, config.EMBEDDING_MODEL)
             
