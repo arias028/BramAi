@@ -81,8 +81,6 @@ def main():
 
             if ai_response:
                 print(f"\n🤖 BramAI: {ai_response}")
-                if sources:
-                    print(f"   💡 Sources: {', '.join(sources)}")
 
                 conversation_history.append({"user": user_input, "ai": ai_response})
 
