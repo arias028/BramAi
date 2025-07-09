@@ -1,0 +1,616 @@
+{
+  "knowledge_base": {
+    "company_group": {
+      "name": "Laskar Buah & BINA Group",
+      "last_updated": "2025-07-08",
+      "version": "2.1"
+    },
+    "company_profile": {
+      "entity_hierarchy": {
+        "parent_group": "Laskar Buah",
+        "it_division": {
+          "original_name": "Laskar Buah IT Team",
+          "spinoff_name": "BINA (Bram Innovation Network and Access)",
+          "spinoff_year": 2024
+        },
+        "public_brand": {
+          "name": "Bram Teknologi",
+          "operated_by": "BINA",
+          "purpose_en": "External customer service",
+          "purpose_id": "Layanan untuk pelanggan eksternal"
+        },
+        "name_origin": {
+          "name": "Bram",
+          "origin": "Son of Laskar Buah's owner, Muhadi"
+        }
+      },
+      "affiliates": [
+        {
+          "name": "Bazzar Indonesia",
+          "founded": 2021,
+          "focus_en": "Vegetable sales",
+          "focus_id": "Penjualan sayur"
+        },
+        {
+          "name": "Rolla",
+          "founded": 2023,
+          "focus_en": "Bakery products",
+          "focus_id": "Produk roti"
+        },
+        {
+          "name": "Toko Juara",
+          "focus": "Sembako, ATK, dan pulsa"
+        }
+      ],
+      "timeline": [
+        {
+          "year": 2020,
+          "event_en": "Started as an internal IT team for Laskar Buah with 3 members. Began custom development of Cashier, ERP, and EMP systems.",
+          "event_id": "Dimulai sebagai tim IT internal untuk Laskar Buah dengan 3 anggota. Memulai pengembangan kustom sistem Kasir, ERP, dan EMP.",
+          "initial_team": ["Priyanto", "Miftahul Huda", "Triatmojo"]
+        },
+        {
+          "year": 2021,
+          "event_en": "Bazzar Indonesia was founded.",
+          "event_id": "Bazzar Indonesia didirikan."
+        },
+        {
+          "year": 2022,
+          "event_en": "Custom systems (Cashier, ERP, EMP) fully implemented, replacing old methods.",
+          "event_id": "Sistem kustom (Kasir, ERP, EMP) sepenuhnya diimplementasikan, menggantikan metode lama."
+        },
+        {
+          "year": 2023,
+          "event_en": "Rolla was founded and started using the team's Production (PROD) system.",
+          "event_id": "Rolla didirikan dan mulai menggunakan sistem Produksi (PROD) tim."
+        },
+        {
+          "year": 2024,
+          "event_en": "IT team spun off as BINA. Bram Teknologi launched as a public brand.",
+          "event_id": "Tim IT dipisahkan menjadi BINA. Bram Teknologi diluncurkan sebagai merek publik."
+        }
+      ]
+    },
+    "bram_teknologi_profile": {
+      "business_model": "Melayani UMKM dan perorangan di Bojonegoro",
+      "services": [
+        "Penjualan Hardware",
+        "Jasa Teknologi (Perbaikan, Instalasi, Konsultasi)",
+        "Pengembangan Sistem (POS, Website, Aplikasi Kustom)"
+      ],
+      "competitive_advantage": [
+        "pengalaman teruji",
+        "solusi terintegrasi",
+        "dukungan lokal",
+        "fokus pada keterjangkauan harga"
+      ]
+    },
+    "company_culture": {
+      "motto": "Toko buah paling murah",
+      "jargon": "Bertumbuh, bertumbuh, kuat",
+      "logo_description": "Tiga segitiga ke atas"
+    },
+    "bina_team_profile": {
+      "total_members": 15,
+      "management": {
+        "commissioner": {
+          "name": "Muhadi",
+          "notes_en": "Owner of Laskar Buah",
+          "notes_id": "Pemilik Laskar Buah"
+        },
+        "director": {
+          "name": "Priyanto",
+          "origin": "Laskar Buah"
+        },
+        "operational_manager": {
+          "name": "Miftahul Huda",
+          "notes_en": "Also Head of Rolla Bakery",
+          "notes_id": "Juga Kepala Rolla Bakery"
+        },
+        "technical_manager": {
+          "name": "Triatmojo",
+          "notes_en": "Direct supervisor of developer team",
+          "notes_id": "Supervisor langsung tim developer"
+        },
+        "finance_manager": {
+          "name": "Fitri Sinta",
+          "origin": "Laskar Buah"
+        }
+      },
+      "supervisor": {
+        "name": "Imron Rosyidi",
+        "role": "Head of BINA"
+      },
+      "developers_and_specialists": [
+        {
+          "name": "Eki Prastyan",
+          "role": "Senior Full-Stack Developer",
+          "details": "Arsitek utama sistem yang menguasai Laravel, React, Vue, dan C#."
+        },
+        {
+          "name": "Muhammad Al Rafi",
+          "role": "Middle Specialist",
+          "focus_en": "DC & Production systems",
+          "focus_id": "Sistem DC & Produksi",
+          "details": "Fokus pada pemeliharaan sistem internal berbasis C# dan PostgreSQL."
+        },
+        {
+          "name": "Syahrul Ari Dwi Pamungkas",
+          "role": "Junior Full-Stack Developer",
+          "focus_en": "Public website and recruitment",
+          "focus_id": "Website publik dan rekrutmen",
+          "details": "Fokus pada website publik dan rekrutmen sambil belajar C# & PostgreSQL dengan bantuan AI."
+        },
+        {
+          "name": "Aditya Bagus Prasetya",
+          "role": "System & Network Specialist",
+          "details": "Fokus pada alur penggunaan sistem dan implementasi jaringan/IoT."
+        }
+      ],
+      "operations_and_administration": [
+        {
+          "name": "Laelatul Alfiatun Nisak",
+          "role": "Admin & Finance"
+        },
+        {
+          "name": "Dewi Susilo Wati",
+          "role": "Customer Service & Admin Assistant"
+        }
+      ],
+      "it_field_support": {
+        "description": "Memberikan dukungan teknis langsung ke semua cabang dengan kunjungan rutin minimal sebulan sekali per toko untuk menangani masalah umum seperti komputer mati, TV rusak, CCTV, dan printer.",
+        "members": [
+          {"name": "Saifur Rohman"},
+          {"name": "Afin Riyandika"},
+          {"name": "Ahmad Fajar Sidiq"},
+          {"name": "Chabib Maulida Indra Wijaya"},
+          {"name": "Erick Delon"},
+          {"name": "Indrata Arga Sukmana"},
+          {"name": "M Wahyu Ilham Al Azis"},
+          {"name": "Raditya Damar Galih"}
+        ]
+      }
+    },
+    "bina_operations": {
+      "communication": "Sangat bergantung pada WhatsApp Group untuk komunikasi. Pelaporan masalah umum dari user melalui CS BINA. Permintaan fitur baru seringkali langsung ditujukan kepada developer via WhatsApp.",
+      "hardware_request_flow": "Permintaan hardware dari toko dikoordinasikan melalui Mas Alvin ke Laila di BINA untuk kemudian dikirim oleh IT Support atau dititipkan via pengiriman DC.",
+      "issue_escalation_flow": "Eskalasi masalah dari IT Support ke developer terjadi jika ditemukan bug pada sistem.",
+      "development_process": "Sangat fleksibel, satu permintaan biasanya dikerjakan oleh satu developer. Testing dilakukan secara mandiri sebelum rilis.",
+      "finance_management": "Keuangan BINA masih terintegrasi dengan kantor pusat Laskar Buah.",
+      "performance_management": "Kinerja IT Support diukur melalui modul 'Jobdesk' di EMP.",
+      "training": "Pelatihan tim belum menjadi program rutin. Saifur dan Adit pernah mengikuti pelatihan IoT.",
+      "recruitment": "Rekrutmen anggota baru dilakukan secara internal dari karyawan grup."
+    },
+    "group_operational_structure": {
+      "main_divisions": [
+        "Sales",
+        "Distribution Center (DC)",
+        "Logistics",
+        "Production",
+        "Construction",
+        "BINA (IT Division)"
+      ],
+      "sub_divisions": {
+        "construction": [
+          "KONVEKSI", "FABLIKASI", "Konstruksi BJN", "SIPIL & KONSTRUKSI", 
+          "MAINTENANCE & DEVELOPMEN", "LISTRIK & INSTALASI", "GRAND OPENING"
+        ],
+        "distribution_centers": [
+          "Distributor Snack Grosir Dan Repack TBN", "Distributor Rolla Bakery", "Distributor Sayur BJN",
+          "Distributor Frozen TBN", "Distributor Frozen BJN", "Distributor Snack Grosir Dan Repack BJN",
+          "Distributor REMBANG 2", "Distributor REMBANG 1", "Distributor Buah BJN", "Distributor Bram Printing",
+          "Distributor Sayur LBR",
+          {"name": "DC TRIAL PUSAT", "notes": "Berfungsi sebagai lingkungan staging."},
+          "Distributor Snack LBR",
+          {"name": "DISTRIBUTOR CENTER RECYCLE", "notes": "Untuk produk limbah."},
+          "Distributor Buah LBR", "PACKAGING", "Distributor GRESIK 1", "Distributor PURWODADI",
+          "Distributor PURWODADI 2", "Distributor GRESIK 2", "Distributor Snack BJN"
+        ],
+        "production": [
+          {"name": "PRODUKSI BERTUMBUH", "notes": "Membuat produk siap saji seperti salad dan Teleria."},
+          "ROLLA BOJONEGORO",
+          {"name": "SORTIR", "notes": "Memilah produk menjadi beberapa grade dengan sistem upah."},
+          "TRIAL PRODUKSI", "PRODUKSI GROSIR"
+        ]
+      },
+      "store_locations": [
+        "BABAT 1", "BABAT - ROWOREJO", "BALENREJO", "BALONGPANGGANG", "BANGILAN", "BANGILAN 2",
+        "BANGKLE - BLORA", "BANJARSARI", "BARAT", "BAURENO", "BAZZAR BABAT", "BAZZAR BANGILAN",
+        "BAZZAR BARAT", "BAZZAR BAURENO", "BAZZAR BOJONEGORO", "BAZZAR CEPU", "BAZZAR DURIAN BANJARSARI",
+        "BAZZAR DURIAN CEPU", "BAZZAR DURIAN NGUMPAKDALEM", "BAZZAR DURIAN PADANGAN", "BAZZAR DURIAN PURWODADI",
+        "BAZZAR DURIAN SUKOWATI", "BAZZAR DURIAN SUMBERJO", "BAZZAR GUBUG", "BAZZAR JATIROGO", "BAZZAR JEPON",
+        "BAZZAR JOGOROGO", "BAZZAR JOGOROTO - JOMBANG", "BAZZAR KALITIDU", "BAZZAR KEDUNGTUBAN", "BAZZAR KEPOHBARU",
+        "BAZZAR KUNDURAN", "BAZZAR KUWU", "BAZZAR MALO", "BAZZAR MENDEN", "BAZZAR NGAWEN", "BAZZAR NGAWI",
+        "BAZZAR PADANGAN", "BAZZAR PARON", "BAZZAR PETERONGAN - JOMBANG", "BAZZAR PLUMPANG", "BAZZAR PONCO",
+        "BAZZAR PURWODADI", "BAZZAR RANDUBLATUNG", "BAZZAR SELOREJO - JOMBANG", "BAZZAR SENORI", "BAZZAR SUMBERJO",
+        "BAZZAR WIROSARI", "BIHANDONO - BLORA", "BLIMBING", "BLORA 2", "BLORA 5", "BLORA 6", "BRAMP KALITIDU",
+        "BRAVO", "BRENGGOLO", "BULU BANCAR", "BUNGAH GRESIK", "CARUBAN", "CEPU 1", "CEPU 2", "CEPU 3", "CEPU-PEMUDA",
+        "DANDER 1", "DANDER 2", "DEMPET-DEMAK", "DOPLANG", "GAMPENG", "GANDRIROJO", "GESIKHARJO", "GODONG",
+        "GUNTUR-DEMAK", "JAKEN - PATI", "JATIROGO 1", "JENU", "JEPON", "JIWAN", "JUWANA - PATI", "KABUH", "KABUNAN",
+        "KADILANGU-DEMAK", "KALIREJO", "KALIREJO - KUDUS", "KARABAN PATI", "KARANGJATI", "KAWEDANAN", "KAYEN PATI",
+        "KEBONAGUNG", "KEDUNGADEM", "KEDUNGADEM 2", "KEDUNGPRING", "KEDUNGPRING 2", "KEREK TUBAN", "KERTOSONO",
+        "KLAMBU", "KRADENAN", "KRAGAN - REMBANG", "KUNDURAN", "KUNIRAN - PATI", "KUWU", "LAMONGAN 1", "LAMONGAN 2",
+        "LAMONGAN - KARANG GENENG", "LAMONGAN - SIDOHARJO", "LAMONGAN SUGIO", "LAMONGAN - SUKODADI", "LAMONGAN-SUKOMULYO",
+        "LAMONGAN - SUKOREJO", "LASEM - REMBANG", "LASKAR BUAH GYM", "LODAN WETAN", "MADEAN", "MADIUN 2", "MANTUP",
+        "MAYANGREJO", "MEDANG - BLORA", "MENDEN", "MENGANTI - GRESIK", "MLANGSEN - BLORA", "MONTONG", "NGAMBON",
+        "NGANJUK 1", "NGANJUK 2", "NGANJUK 3", "NGANJUK - GONDANG", "NGASEM", "NGAWEN", "NGAWI 1", "NGIMBANG - LAMONGAN",
+        "NGRAHO", "NGUMPAK DALEM", "PACIRAN", "PACUL", "PADANGAN 1", "PADANGAN 2", "PALANG", "PAMOTAN", "PANGSUD",
+        "PANUNGGALAN", "PENAWANGAN", "PLUMPANG", "PRAMBON 1", "PRAMBON 2", "PRAMBONTERGAYANG", "PRAYUNGAN", "PUNGPUNGAN",
+        "PURWODADI", "PURWODADI - DANYANG", "PURWODADI - DEPOK", "PURWODADI - GETASREJO", "PURWODADI - JETIS",
+        "PURWODADI - TOROH", "PURWOSARI - KUDUS", "PUSAT", "PUSAT BZ", "RANDUBLATUNG", "REJOSO", "REMBANG KOTA",
+        "REMBANG KOTA 2", "REMBANG KOTA 3", "REMBANG KOTA 4", "RENGEL 1", "RENGEL 2", "Roti Rolla", "SANGGRAHAN GETASREJO",
+        "SARANG - REMBANG", "SATPASPUR 1", "SATPASPUR 2", "SEDAN", "SEDAN 2", "SEKARAN", "SENDANGHARJO", "SIDAYU - GRESIK",
+        "SITIAJI", "SOKO", "SRATUREJO", "SUGIH WARAS", "SUKORAME", "SUKOSEWU", "SUKOWATI", "SULANG 2", "SULANG REMBANG",
+        "SULURSARI", "SUMBERJO", "TAJI", "TAKERAN", "TAMBAKBOYO", "TAMBAKROMO", "TEMAYANG", "TIKUNG - LAMONGAN", "TOBO 2",
+        "TOBO 3", "TODANAN", "TOKO JUARA NGASEM", "TOKO JUARA TOBO", "TRUCUK", "TUBAN 1", "TUBAN 2", "TUBAN 3", "TUBAN 4",
+        "TUBAN 5", "UNDAAN", "UNTUNG SUROPATI", "WARUJAYENG 1", "WARUJAYENG 2", "WINONG PATI"
+      ]
+    },
+    "internal_systems_architecture": {
+      "general_url_pattern": "http://[subdomain].ctmial9mevzk.work",
+      "systems": {
+        "erp": {
+          "name_en": "Enterprise Resource Planning",
+          "name_id": "Perencanaan Sumber Daya Perusahaan",
+          "description_en": "Central hub for business processes and data management.",
+          "description_id": "Pusat untuk proses bisnis dan manajemen data.",
+          "modules": {
+            "product_management": [
+              {"name": "Master Product", "path": "Produk/masterproduk"},
+              {"name": "Store Item Price/Discount", "path": "Produk/priceitemstore"},
+              {"name": "Setting Management", "path": "Produk/settingmanage"},
+              {"name": "BS Report", "path": "Produk/reportbs"},
+              {"name": "B Grade Report", "path": "Produk/reportbgrade"},
+              {"name": "Member Discount", "path": "Produk/discmemberitem"},
+              {"name": "Item Points", "path": "Produk/itempoin"},
+              {"name": "Store Item Mutation", "path": "Produk/mutasiitem"},
+              {"name": "Mutation Report", "path": "Produk/reportmutasi"},
+              {"name": "Product Photos", "path": "Produk/fotoproduct"}
+            ],
+            "account_payable": [
+              {"name": "Vendor", "path": "AP/vendor"},
+              {"name": "AP Balance", "path": "AP/apbalance"},
+              {"name": "Petty Cash Report", "path": "AP/reportpettycash"},
+              {"name": "Membership", "path": "AP/membership"},
+              {"name": "Point Redemption Report", "path": "AP/reedempoinreport"},
+              {"name": "Membership Chart", "path": "AP/chartMemberships"}
+            ],
+            "account_receivable": [
+              {"name": "Store", "path": "AR/store"},
+              {"name": "Voucher", "path": "AR/voucher"},
+              {"name": "Sales Report", "path": "AR/reportpenjualan"},
+              {"name": "EOD Report", "path": "AR/reporteod"},
+              {"name": "Dashboard", "path": "AR/chart"},
+              {"name": "AR Balance", "path": "AR/arbalance"},
+              {"name": "Non-Cash Report", "path": "AR/reportnontunai"},
+              {"name": "Cash Deposit Report", "path": "AR/reportsetoran"},
+              {"name": "Division Target", "path": "AR/targetdivisi"},
+              {"name": "Income Chart", "path": "AR/chartincome"},
+              {"name": "Live Store", "path": "AR/livestore"},
+              {"name": "Store Transaction Detail", "path": "AR/dtstore"},
+              {"name": "Customer Transaction", "path": "AR/trxcustomer"},
+              {"name": "Daily Sales Order", "path": "AR/setsoday"},
+              {"name": "Stock Margin Audit", "path": "AR/marginstockaudit"},
+              {"name": "Inventory Control", "path": "AR/controlinventory"},
+              {"name": "Daily Sales Order Item", "path": "AR/setsodayitem"},
+              {"name": "Defect Chart", "path": "AR/grafikdefect"},
+              {"name": "Job Desk Report", "path": "AR/dailyjobdesk"}
+            ],
+            "human_resource": [
+              {"name": "Employee", "path": "HRD/karyawan"},
+              {"name": "Store Employee Access", "path": "HRD/karyawanstore"},
+              {"name": "DC Employee Access", "path": "HRD/karyawandc"},
+              {"name": "Attendance Report", "path": "HRD/reportabsen"},
+              {"name": "Payroll Grade", "path": "HRD/gradepayroll"},
+              {"name": "Employee Payroll", "path": "HRD/karyawanpayroll"},
+              {"name": "Generate Payroll", "path": "HRD/generatepayroll"},
+              {"name": "Morning Attendance Report", "path": "HRD/reportabsensubuh"},
+              {"name": "Employee Resignation", "path": "HRD/karyawanresign"},
+              {"name": "Employee Dashboard", "path": "HRD/dashboardkaryawan"},
+              {"name": "Store Mutation", "path": "HRD/mutasiuserstore"},
+              {"name": "Employee Performance", "path": "HRD/employeeperformance"},
+              {"name": "Production Employee Access", "path": "HRD/karyawanprod"},
+              {"name": "Employee Voucher", "path": "HRD/voucherkaryawan"},
+              {"name": "Employee Assessment", "path": "HRD/employeeassessment"},
+              {"name": "Construction Employee Access", "path": "HRD/karyawancons"},
+              {"name": "Overtime Attendance Report", "path": "HRD/reportabsenlembur"},
+              {"name": "IT Employee Access", "path": "HRD/karyawanlit"},
+              {"name": "Official Letter", "path": "HRD/suratresmi"},
+              {"name": "Payroll Report", "path": "HRD/reportpayroll"},
+              {"name": "Employee Submission", "path": "HRD/pengajuankaryawan"},
+              {"name": "Company SOP", "path": "HRD/sopperusahaan"},
+              {"name": "Contract TTD Report", "path": "HRD/reporttdkontrak"},
+              {"name": "Master KPI", "path": "HRD/masterkpi"}
+            ],
+            "financial_accounting": [
+              {"name": "Account Chart", "path": "GL/mastercoa"},
+              {"name": "General Ledger", "path": "GL/generalledger"},
+              {"name": "Cash Receipts", "path": "GL/cashreceipts"},
+              {"name": "Cash Disbursement", "path": "GL/cashdisbursement"},
+              {"name": "Sales Journal", "path": "GL/salesjournal"},
+              {"name": "Purchase Journal", "path": "GL/purchasejournal"},
+              {"name": "Adjustment", "path": "GL/adjustment"},
+              {"name": "Main Ledger", "path": "GL/ledger"},
+              {"name": "Accounts Receivable", "path": "GL/bbpiutang"},
+              {"name": "Accounts Payable", "path": "GL/bbutang"},
+              {"name": "Financial Report", "path": "GL/report"},
+              {"name": "Work Sheet", "path": "GL/worksheet"},
+              {"name": "Closing Journal", "path": "GL/closejournal"},
+              {"name": "Bank Reconciliation", "path": "GL/reconcilebank"},
+              {"name": "Purchase Payment DC", "path": "GL/purchasepaymentdc"},
+              {"name": "DC Shipping Summary Report", "path": "GL/reportdcstoresummary"},
+              {"name": "Transaction Journal Report", "path": "GL/reportjurnaltrx"},
+              {"name": "Fixed Asset", "path": "GL/masterasset"},
+              {"name": "Asset Submission", "path": "GL/pengajuanaset"},
+              {"name": "Asset Report", "path": "GL/reportasset"},
+              {"name": "Fixed Asset Summary", "path": "GL/reportfasummary"},
+              {"name": "Cash Balance", "path": "GL/cashbalance"},
+              {"name": "General Profit and Loss Report", "path": "GL/reportplgeneral"},
+              {"name": "Reconciliation Report", "path": "GL/reportreconcile"}
+            ],
+            "distributor_management": [
+              {"name": "DC Center", "path": "DM/dc"},
+              {"name": "DC Shipping Report", "path": "DM/reportdelivery"},
+              {"name": "Defect and Return Report", "path": "DM/reportdefectandreturn"},
+              {"name": "Purchase Report", "path": "DM/reportpurchase"},
+              {"name": "Direct Sales Report", "path": "DM/reportpenjualanlangsung"},
+              {"name": "Other Income Report", "path": "DM/reportotherincome"},
+              {"name": "Debt List Report", "path": "DM/reportlisthutang"},
+              {"name": "Purchase Order Forecast", "path": "DM/rpurcaseforecast"}
+            ],
+            "production_management": [
+              {"name": "Production Location", "path": "PROD/produksilokasi"},
+              {"name": "Production Shipping Report", "path": "PROD/reportdelivery"}
+            ],
+            "construction_management": [
+              {"name": "Construction Master", "path": "CONS/konstruksi"},
+              {"name": "Construction Item", "path": "CONS/itemkonstruksi"}
+            ],
+            "warehouse_management": [
+              {"name": "Building Room", "path": "WMS/buldingroom"}
+            ],
+            "it_management": [
+              {"name": "Information Technology", "path": "LIT/lit"},
+              {"name": "IT Items", "path": "LIT/itemlit"}
+            ]
+          }
+        },
+        "dc": {
+          "name_en": "Distribution Center System",
+          "name_id": "Sistem Pusat Distribusi",
+          "modules": {
+            "main": [
+              {"name": "DC Item Price", "path": "DM/price"},
+              {"name": "Inventory", "path": "DM/inventory"},
+              {"name": "Purchase Order", "path": "DM/purchaseorder"},
+              {"name": "Sales Order", "path": "DM/salesorder"},
+              {"name": "Real Time Order", "path": "DM/realtimeorder"},
+              {"name": "Goods Receipt", "path": "DM/grn"},
+              {"name": "Stock Opname DC", "path": "DM/stockopnamedc"},
+              {"name": "Purchase Forecast", "path": "DM/purchaseforecast"},
+              {"name": "Cashier A Grade", "path": "DM/kasiragrade"},
+              {"name": "DC Bazzar", "path": "DM/bazzardc"},
+              {"name": "Wholesale", "path": "DM/wholesale"},
+              {"name": "Waste", "path": "DM/limbah"},
+              {"name": "DC to DC Sale", "path": "DM/saletodc"},
+              {"name": "Purchase Order DC", "path": "DM/purchaseorderdc"},
+              {"name": "Item Selection", "path": "DM/itemselection"},
+              {"name": "Reception from Production", "path": "DM/receptionfromprod"},
+              {"name": "Other Income", "path": "DM/otherincome"},
+              {"name": "Quarantine Inventory", "path": "DM/inventorykarantina"},
+              {"name": "Item Transfer", "path": "DM/transferitem"},
+              {"name": "Supplier Return", "path": "DM/dcreturnspy"}
+            ],
+            "reports": [
+              {"name": "DC Shipping Report", "path": "DM/reportdelivery"},
+              {"name": "Purchase Report", "path": "DM/reportpurchase"},
+              {"name": "Profit and Loss Report", "path": "DM/reportpl"},
+              {"name": "Defect Report", "path": "DM/reportdefect"},
+              {"name": "Return Report", "path": "DM/reportreturn"},
+              {"name": "Direct Sales Report", "path": "DM/reportpenjualanlangsung"},
+              {"name": "Waste Report", "path": "DM/reportlimbah"},
+              {"name": "Wholesale Report", "path": "DM/reportwholesale"},
+              {"name": "DC Chart", "path": "DM/chartdc"},
+              {"name": "Forecast Report", "path": "DM/reportforecast"},
+              {"name": "Selection Report", "path": "DM/reportselection"},
+              {"name": "DC Income Chart", "path": "DM/chartincome"},
+              {"name": "BS Approval Report", "path": "DM/approvebsdc"},
+              {"name": "Need Report", "path": "DM/reportkebutuhan"},
+              {"name": "Debt List Report", "path": "DM/reportlisthutang"},
+              {"name": "Order Fulfillment Report", "path": "DM/reportpemenuhanorder"},
+              {"name": "Need 2 Report", "path": "DM/reportkebutuhan2"},
+              {"name": "DC Chart 2", "path": "DM/chartdc2"}
+            ],
+            "loading_forms": [
+              {"name": "Loading Form 1", "path": "DM/formloading"},
+              {"name": "Loading Form 2", "path": "DM/formloading2"}
+            ],
+            "settings": [
+              {"name": "Stock Opname Setting", "path": "DM/setsodc"}
+            ],
+            "shipping": [
+              {"name": "Shipping Area", "path": "DM/areakirimdc"},
+              {"name": "Reception Purchase Order", "path": "DM/receptionpurchase"}
+            ]
+          }
+        },
+        "logistics": {
+          "name_en": "Logistics System",
+          "name_id": "Sistem Logistik",
+          "modules": [
+            {"name": "Vehicle Master", "path": "LOGI/masterkendaraan"},
+            {"name": "Store Location", "path": "LOGI/lokasistore"},
+            {"name": "Delivery Schedule", "path": "LOGI/jadwalkirim"},
+            {"name": "Driver Tracking", "path": "LOGI/trackingdrive"}
+          ]
+        },
+        "production": {
+          "name_en": "Production System",
+          "name_id": "Sistem Produksi",
+          "modules": {
+            "main": [
+              {"name": "Finished Goods Inventory", "path": "PROD/finishgoodinv"},
+              {"name": "Material Inventory", "path": "PROD/materialinv"},
+              {"name": "Prod Purchase Order", "path": "PROD/purchaseorder"},
+              {"name": "BOM", "path": "PROD/masterbom"},
+              {"name": "Production Order", "path": "PROD/productionorder"},
+              {"name": "Production Forecast", "path": "PROD/purchaseforecast"},
+              {"name": "Real Time Production Order", "path": "PROD/realtimeorder"},
+              {"name": "Production Price", "path": "PROD/price"},
+              {"name": "Stock Opname Prod", "path": "PROD/stockopnameprod"},
+              {"name": "Stock Opname Setting", "path": "PROD/setsoprod"},
+              {"name": "Loading Form", "path": "PROD/formloading"},
+              {"name": "Defect Inventory", "path": "PROD/defectinventory"},
+              {"name": "Prod Cashier", "path": "PROD/kasirprod"},
+              {"name": "Reception from DC", "path": "PROD/receptionfromdc"},
+              {"name": "Intermediet Inventory", "path": "PROD/intermedietinv"},
+              {"name": "PROD to DC Item Transfer", "path": "PROD/transferitem"},
+              {"name": "Store Fluctuation", "path": "PROD/fluktuasistore"}
+            ],
+            "reports": [
+              {"name": "Production Shipping Report", "path": "PROD/reportdelivery"},
+              {"name": "Return Report", "path": "PROD/reportreturn"},
+              {"name": "Order Fulfillment Report", "path": "PROD/reportpemenuhanorder"},
+              {"name": "Dough Production Order Report", "path": "PROD/reportproductionorderdough"},
+              {"name": "Purchase Report", "path": "PROD/reportpurchaseprod"},
+              {"name": "Direct Sales Report", "path": "PROD/reportpenjualanlangsung"},
+              {"name": "Production Income Chart", "path": "PROD/chartincome"},
+              {"name": "Waste Report", "path": "PROD/reportlimbah"},
+              {"name": "Debt List Report", "path": "PROD/reportlisthutangprod"},
+              {"name": "Production Order Report", "path": "PROD/reportprodorder"}
+            ],
+            "mes": [
+              {"name": "MES SPK", "path": "PROD/messpk"},
+              {"name": "MES Recipe", "path": "PROD/mesresep"},
+              {"name": "MES Production", "path": "PROD/mesproduction"}
+            ]
+          }
+        },
+        "store": {
+          "name_en": "Store/Sales System",
+          "name_id": "Sistem Toko/Penjualan",
+          "url": "https://gasss.oecop8ezw4y0.work",
+          "modules": [
+            {"name": "Cashier", "path": "Sales/kasir"},
+            {"name": "Sales Inventory", "path": "Sales/inventory"},
+            {"name": "Store Stock Opname", "path": "Sales/stockopnamestore"},
+            {"name": "B Grade Approval", "path": "Sales/approvebgrade"},
+            {"name": "Stock Opname Setting", "path": "Sales/setsostore"},
+            {"name": "Close Item Stock", "path": "Sales/closeitemstock"},
+            {"name": "Waste", "path": "Sales/limbah"},
+            {"name": "B Grade Price", "path": "Sales/bgradeprice"},
+            {"name": "Point Exchange", "path": "Sales/tukarpoin"},
+            {"name": "Store Chart", "path": "Sales/chart"},
+            {"name": "Division Target", "path": "Sales/targetdivisistore"},
+            {"name": "Top Up Saving", "path": "Sales/topup"},
+            {"name": "Product Label", "path": "Sales/bandrol"},
+            {"name": "Unreceived Waybill", "path": "Sales/reportsj"},
+            {"name": "BS Approval", "path": "Sales/approvebs"},
+            {"name": "Store Inventory", "path": "Sales/inventoryalat"},
+            {"name": "Cheap Item", "path": "Sales/tebusmurah"},
+            {"name": "Productivity", "path": "Sales/productivity"},
+            {"name": "Depreciation Report", "path": "Sales/reportdepre"},
+            {"name": "Reception Mutation", "path": "Sales/reception"},
+            {"name": "Self Service", "path": "Sales/selfservice"},
+            {"name": "Virtual Account Price", "path": "Sales/virtualaccountprice"}
+          ]
+        },
+        "lit": {
+          "name_en": "IT System",
+          "name_id": "Sistem IT",
+          "modules": {
+            "main": [
+              {"name": "Price Master", "path": "LIT/pricelit"},
+              {"name": "Inventory", "path": "LIT/inventoryit"},
+              {"name": "Building Layout", "path": "LIT/layoutbuilding"},
+              {"name": "Purchase Order", "path": "LIT/purchaseorder"},
+              {"name": "Asset Inventory", "path": "LIT/assetinventory"},
+              {"name": "BOM", "path": "LIT/bomit"},
+              {"name": "Production", "path": "LIT/productionit"},
+              {"name": "Job Order", "path": "LIT/workorderit"},
+              {"name": "Job Shipping", "path": "LIT/jodeliveryit"},
+              {"name": "Stock Opname Setting", "path": "LIT/setsoit"},
+              {"name": "Stock Opname", "path": "LIT/stockopnameit"},
+              {"name": "Project Ticket", "path": "LIT/Projectticket"},
+              {"name": "Real Time IT", "path": "LIT/Realtimeit"},
+              {"name": "LIT Cashier", "path": "LIT/kasirit"},
+              {"name": "Loading Form", "path": "LIT/formloadingit"},
+              {"name": "Rental Data", "path": "LIT/sewa"}
+            ],
+            "reports": [
+              {"name": "Purchase Order Report", "path": "LIT/reportpurchaseit"},
+              {"name": "IT Shipping Report", "path": "LIT/reportdeliveryit"},
+              {"name": "Job Order Report", "path": "LIT/reportjoit"},
+              {"name": "Direct Sales Report", "path": "LIT/reportpenjualanlangsung"},
+              {"name": "Need Report", "path": "LIT/reportkebutuhan"},
+              {"name": "BINA Debt List", "path": "LIT/listhutang"}
+            ]
+          }
+        },
+        "emp": {
+          "name_en": "Employee Portal",
+          "name_id": "Portal Karyawan",
+          "url": "http://emp.ctmial9mevzk.work",
+          "description_en": "This is another website used by employees.",
+          "description_id": "Sistem ini adalah website lain yang digunakan oleh karyawan.",
+          "features": {
+            "main_navigation": [
+              {"name": "Profile", "icon": "person-outline", "description_en": "Access user-specific information and functions.", "description_id": "Akses informasi dan fungsi khusus pengguna."},
+              {"name": "Attendance", "icon": "camera-outline", "description_en": "Record work entry and exit times.", "description_id": "Catat waktu masuk dan keluar kerja."},
+              {"name": "Home", "icon": "home-outline", "description_en": "Link to main page (/), which is currently a blank white page.", "description_id": "Tautan ke halaman utama (/), yang saat ini merupakan halaman putih kosong."},
+              {"name": "Quran", "icon": "book-outline", "description_en": "Used for 'dawn attendance', which involves reading the Quran. Includes options for menstruating women.", "description_id": "Digunakan untuk 'absensi subuh', yang melibatkan membaca Al-Quran. Termasuk opsi untuk wanita yang sedang menstruasi."},
+              {"name": "Menu", "icon": "menu-outline", "description_en": "Opens sidebar panel for other options.", "description_id": "Membuka panel sidebar untuk opsi lain."}
+            ],
+            "profile_tabs": [
+              {"name": "Monthly Attendance", "icon": "grid-outline", "description_en": "View monthly attendance records.", "description_id": "Lihat catatan kehadiran bulanan."},
+              {"name": "Salary Details", "icon": "cash-outline", "description_en": "View salary details.", "description_id": "Lihat detail gaji."},
+              {"name": "Competence", "icon": "layers-outline", "description_en": "View attendance and discipline records. This also shows the percentage of 'dawn attendance'. If this percentage is below 90% in a month, the employee may be terminated.", "description_id": "Lihat catatan kehadiran dan disiplin. Ini juga menunjukkan persentase 'absensi subuh'. Jika persentase ini di bawah 90% dalam sebulan, karyawan dapat di-PHK."},
+              {"name": "Official Letters", "icon": "bookmark-outline", "description_en": "For 'official letters'; access is not available to everyone.", "description_id": "Untuk 'surat resmi'; akses tidak tersedia untuk semua orang."},
+              {"name": "Company Regulations", "icon": "document-text-outline", "description_en": "View company regulations in downloadable PDF format.", "description_id": "Lihat peraturan perusahaan dalam format PDF yang dapat diunduh."},
+              {"name": "Asset Records", "icon": "book-outline", "description_en": "View company asset records borrowed by employees (e.g., motorcycles, laptops).", "description_id": "Lihat catatan aset perusahaan yang dipinjam oleh karyawan (misalnya, sepeda motor, laptop)."},
+              {"name": "Personal Data", "icon": "settings-outline", "description_en": "View employee personal data (name, place and date of birth, etc.).", "description_id": "Lihat data pribadi karyawan (nama, tempat dan tanggal lahir, dll.)."}
+            ],
+            "side_menu": [
+              {"name": "Dark Mode Button"},
+              {"name": "Store Goods Receipt", "path": "EMP/goodsreceipt"},
+              {"name": "Enter Defective Items", "path": "EMP/enterdefect"},
+              {"name": "BS Items", "path": "EMP/expiredgoods"},
+              {"name": "Item Return", "path": "EMP/itemreturn"},
+              {"name": "Item Opname", "path": "EMP/opnameitems"},
+              {"name": "Mixed Items", "path": "EMP/itemmix"},
+              {"name": "B Grade", "path": "EMP/bgrade"},
+              {"name": "Shipping", "path": "EMP/shipment"},
+              {"name": "Set Schedule", "path": "EMP/jadwal"},
+              {"name": "Petty Cash", "path": "EMP/pettycash"},
+              {"name": "Cash Deposit", "path": "EMP/setortunai"},
+              {"name": "Add Member", "path": "EMP/addmember"},
+              {"name": "Resign", "path": "EMP/resign"},
+              {"name": "Reception", "path": "EMP/reception"},
+              {"name": "Live Shipping", "path": "EMP/livekirim"},
+              {"name": "Set Repack", "path": "EMP/setrepack"},
+              {"name": "Set Competence", "path": "EMP/setkopetensi"},
+              {"name": "Production Shipping", "path": "EMP/shipmentprod"},
+              {"name": "Set Overtime Schedule", "path": "EMP/jadwallembur"},
+              {"name": "Opname Lock", "path": "EMP/opnamelock"},
+              {"name": "Production Reception", "path": "EMP/receptionprod"},
+              {"name": "Open Ticket", "path": "EMP/openticketing"},
+              {"name": "Driver's Direction", "path": "EMP/driversdirection"},
+              {"name": "Online Signature", "path": "EMP/tandatanganonline"},
+              {"name": "Asset Submission", "path": "EMP/pengajuanaset"},
+              {"name": "Construction Work Order", "path": "EMP/joborder"},
+              {"name": "Employee Submission", "path": "EMP/pengajuankaryawan"},
+              {"name": "Company SOP", "path": "EMP/sopperusahaan"},
+              {"name": "Daily Job Desk", "path": "EMP/dailyjobdesk"},
+              {"name": "DC Purchase Order", "path": "EMP/purchaseorder"},
+              {"name": "IT Job Desk", "path": "EMP/dailyitjobdesk"}
+            ]
+          }
+        }
+      }
+    },
+    "technical_outlook": {
+      "challenges": "Kelambatan performa sistem saat beban tinggi dan isu keamanan (sekarang sudah lebih terkendali).",
+      "future_plans": "Integrasi teknologi AI lebih jauh, saat ini dalam tahap riset dan pembelajaran oleh Syahrul (Ari)."
+    }
+  }
+}
