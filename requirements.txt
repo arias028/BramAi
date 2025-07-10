@@ -1,0 +1,5 @@
+pymongo[srv]
+numpy
+requests
+langdetect
+# Add other dependencies here if needed 

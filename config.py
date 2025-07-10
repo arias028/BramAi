@@ -1,4 +1,6 @@
-VECTOR_DATABASE_PATH = "vector_database.json"
+MONGO_URI = "mongodb://localhost:27017/"
+DATABASE_NAME = "BramAi"
+COLLECTION_NAME = "knowledge"
 OLLAMA_API_URL_GENERATE = "http://127.0.0.1:11434/api/generate"
 OLLAMA_API_URL_EMBEDDINGS = "http://127.0.0.1:11434/api/embeddings"
 EMBEDDING_MODEL = "mxbai-embed-large"
