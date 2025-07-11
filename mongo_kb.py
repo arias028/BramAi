@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 import numpy as np
 from knowledge_base_abc import KnowledgeBase
+import time
 
 def cosine_similarity(v1, v2):
     """Calculates the cosine similarity between two vectors."""
@@ -43,7 +44,7 @@ class MongoKnowledgeBase(KnowledgeBase):
     def find_relevant_chunks(self, question_embedding, top_k=config.TOP_K):
         """
         Finds the most relevant text chunks by fetching all documents
-        and calculating cosine similarity in-memory.
+        and calculating cosine similarity in-memory, with a recency bonus.
         """
         if not self.client or not question_embedding:
             return "", [], 0.0
@@ -53,9 +54,21 @@ class MongoKnowledgeBase(KnowledgeBase):
             return "", [], 0.0
 
         similarities = []
+        now = time.time()
         for chunk in all_chunks:
             score = cosine_similarity(question_embedding, chunk["vector"])
-            similarities.append((score, chunk))
+            
+            # Add a recency bonus to prioritize newly learned facts
+            recency_bonus = 0.0
+            created_at = chunk.get("created_at", 0.0) # Default to old if timestamp not present
+            age_seconds = now - created_at
+            
+            # Increased bonus to 0.3 for newer items, decays over 7 days
+            if age_seconds < 604800: # 7 days in seconds
+                recency_bonus = 0.3 * (1 - (age_seconds / 604800))
+            
+            final_score = score + recency_bonus
+            similarities.append((final_score, chunk))
     
         similarities.sort(key=lambda x: x[0], reverse=True)
         
@@ -72,7 +85,7 @@ class MongoKnowledgeBase(KnowledgeBase):
 
     def learn_new_fact(self, fact_text, source="user_provided"):
         """
-        Learns a new fact, adds it to the database.
+        Learns a new fact, adds it to the database with a timestamp.
         Returns True if successful, False otherwise.
         """
         if not self.client:
@@ -86,7 +99,8 @@ class MongoKnowledgeBase(KnowledgeBase):
             self.collection.insert_one({
                 "source": source,
                 "content": fact_text,
-                "vector": new_embedding
+                "vector": new_embedding,
+                "created_at": time.time() # Add timestamp for new facts
             })
             print("✅ Fact learned successfully.")
             return True
@@ -123,11 +137,12 @@ class MongoKnowledgeBase(KnowledgeBase):
         best_match_score, best_match_chunk = similarities[0]
 
         if best_match_score >= config.FORGET_SIMILARITY_THRESHOLD:
-            print(f"🎯 Found a potential match with confidence {best_match_score:.2f}:")
+            print(f"🎯 Found a fact in my knowledge base that seems to match your request (confidence {best_match_score:.2f}):")
             print(f"   '{best_match_chunk['content']}'")
-            
+            print(f"\n   This fact might be the cause of recent incorrect answers.")
+
             try:
-                confirmation = input("   Are you sure you want to permanently delete this? (yes/no): ").lower().strip()
+                confirmation = input("   Are you sure you want me to permanently delete this specific fact? (yes/no): ").lower().strip()
                 if confirmation == 'yes':
                     self.collection.delete_one({"_id": best_match_chunk['_id']})
                     print("✅ Fact forgotten successfully.")

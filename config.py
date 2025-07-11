@@ -9,6 +9,7 @@ TOP_K = 8  # Increased from 5 to get more context
 CONVERSATION_HISTORY_LENGTH = 5  # Increased from 3 for better context awareness
 FORGET_SIMILARITY_THRESHOLD = 0.9
 CLARIFICATION_THRESHOLD = 0.5
+WEB_SEARCH_THRESHOLD = 0.82  # Increased from 0.7 to be stricter
 DEFAULT_LANGUAGE = "id"  # Set Indonesian as default language
 TEMPERATURE = 0.7  # Default creativity level
 REASONING_THRESHOLD = 0.75  # Threshold to use advanced reasoning for complex questions 

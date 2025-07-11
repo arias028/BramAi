@@ -22,51 +22,41 @@ def generate_response(question, context, language, conversation_history, sources
     """
     history_str = format_history(conversation_history)
     
-    # Enhanced prompt templates for better reasoning and more natural responses
+    # New, more robust prompt templates to fix language and personality issues.
     prompt_template_en = """
-    You are BramAI, a highly intelligent and helpful assistant with a friendly, conversational personality.
+    You are BramAI, an AI assistant from BINA.
 
-    Follow these steps to answer the user's question:
-    1. Carefully analyze the CONTEXT and conversation history.
-    2. Connect relevant information from different parts of the CONTEXT if necessary.
-    3. If the question requires inference beyond the explicit facts, reason through it step by step.
-    4. Ensure your answer is comprehensive yet concise.
-    5. Maintain a natural, conversational tone.
+    MOST IMPORTANT RULE:
+    1.  ANSWER ONLY BASED ON THE MOST RELEVANT PIECE OF CONTEXT. NEVER COMBINE INFORMATION FROM DIFFERENT CONTEXTS.
+    2.  ANSWER BRIEFLY AND DIRECTLY TO THE CORE OF THE QUESTION.
+    3.  If the requested information is NOT EXPLICITLY in the CONTEXT, answer ONLY with: "I'm sorry, I don't have that information."
+    4.  Do not repeat the user's question.
 
-    If the answer is not contained in the CONTEXT or conversation history, respond with: "I'm sorry, I don't have that information."
-    Do not mention sources in your response.
-
-    RECENT CONVERSATION:
-    {history}
-    
     CONTEXT:
     {context}
 
-    USER'S QUESTION:
+    QUESTION:
     {question}
+
+    YOUR ANSWER:
     """
 
     prompt_template_id = """
-    Anda adalah BramAI, asisten yang sangat cerdas dan membantu dengan kepribadian yang ramah dan komunikatif.
+    Anda adalah BramAI, asisten AI dari BINA.
 
-    Ikuti langkah-langkah berikut untuk menjawab pertanyaan pengguna:
-    1. Analisis dengan cermat KONTEKS dan riwayat percakapan.
-    2. Hubungkan informasi yang relevan dari berbagai bagian KONTEKS jika diperlukan.
-    3. Jika pertanyaan membutuhkan kesimpulan di luar fakta eksplisit, bernalar langkah demi langkah.
-    4. Pastikan jawaban Anda komprehensif namun ringkas.
-    5. Pertahankan nada percakapan yang alami.
-
-    Jika jawaban tidak terdapat dalam KONTEKS atau riwayat percakapan, jawab dengan: "Maaf, saya tidak memiliki informasi tersebut."
-    Jangan menyebutkan sumber informasi dalam jawaban Anda.
-
-    RIWAYAT PERCAKAPAN TERBARU:
-    {history}
+    ATURAN PALING PENTING:
+    1.  JAWAB HANYA BERDASARKAN SATU BAGIAN KONTEKS YANG PALING RELEVAN. JANGAN PERNAH MENGGABUNGKAN INFORMASI DARI BEBERAPA KONTEKS YANG BERBEDA.
+    2.  JAWAB DENGAN SINGKAT DAN LANGSUNG KE INTI PERTANYAAN.
+    3.  Jika informasi yang diminta TIDAK ADA SECARA EKSPLISIT di dalam KONTEKS, jawab HANYA dengan: "Maaf, saya tidak memiliki informasi tersebut."
+    4.  Jangan mengulang pertanyaan pengguna.
 
     KONTEKS:
     {context}
 
-    PERTANYAAN PENGGUNA:
+    PERTANYAAN:
     {question}
+
+    JAWABAN ANDA:
     """
     
     if language == 'id':
@@ -168,6 +158,7 @@ def analyze_sentiment(text, language="id"):
     """
     Analyzes the sentiment of the provided text.
     Returns a sentiment score and explanation.
+    Now uses streaming to handle responses correctly.
     """
     prompt_template_en = """
     Analyze the sentiment of the following text. Provide:
@@ -196,12 +187,22 @@ def analyze_sentiment(text, language="id"):
     try:
         payload = {
             "model": config.LLM_MODEL, 
-            "prompt": prompt
+            "prompt": prompt,
+            "stream": True  # Enable streaming to fix JSON errors
         }
         
-        response = requests.post(config.OLLAMA_API_URL_GENERATE, json=payload)
-        response.raise_for_status()
-        return response.json().get("response", "").strip()
+        full_response = ""
+        with requests.post(config.OLLAMA_API_URL_GENERATE, json=payload, stream=True) as response:
+            response.raise_for_status()
+            for chunk in response.iter_lines():
+                if chunk:
+                    decoded_chunk = json.loads(chunk.decode('utf-8'))
+                    response_part = decoded_chunk.get("response", "")
+                    full_response += response_part
+                    if decoded_chunk.get("done"):
+                        break
+        return full_response.strip()
+
     except Exception as e:
         error_msg = f"Terjadi kesalahan saat menganalisis sentimen: {e}" if language == "id" else f"An error occurred during sentiment analysis: {e}"
         return error_msg
@@ -210,6 +211,7 @@ def answer_with_reasoning(question, context, language="id"):
     """
     Provides an answer with explicit reasoning steps for complex questions.
     Shows the thought process to increase transparency and trust.
+    Now uses streaming to handle responses correctly.
     """
     prompt_template_en = """
     You are a helpful AI assistant. For this complex question, show your reasoning process step by step:
@@ -250,12 +252,80 @@ def answer_with_reasoning(question, context, language="id"):
     prompt = prompt_template_id.format(context=context, question=question) if language == "id" else prompt_template_en.format(context=context, question=question)
     
     try:
-        payload = {"model": config.LLM_MODEL, "prompt": prompt}
-        response = requests.post(config.OLLAMA_API_URL_GENERATE, json=payload)
-        response.raise_for_status()
-        return response.json().get("response", "").strip()
+        payload = {
+            "model": config.LLM_MODEL,
+            "prompt": prompt,
+            "stream": True  # Enable streaming to fix JSON errors
+        }
+        full_response = ""
+        with requests.post(config.OLLAMA_API_URL_GENERATE, json=payload, stream=True) as response:
+            response.raise_for_status()
+            for chunk in response.iter_lines():
+                if chunk:
+                    decoded_chunk = json.loads(chunk.decode('utf-8'))
+                    response_part = decoded_chunk.get("response", "")
+                    full_response += response_part
+                    if decoded_chunk.get("done"):
+                        break
+        return full_response.strip()
     except Exception as e:
         error_msg = f"Terjadi kesalahan: {e}" if language == "id" else f"An error occurred: {e}"
+        return error_msg
+
+def generate_response_from_web(question, web_context, language="id"):
+    """
+    Generates an answer based on web search results.
+    """
+    prompt_template_en = """
+    You are BramAI, an AI assistant.
+    Answer the user's QUESTION based ONLY on the provided WEB CONTEXT.
+    Answer concisely in English. If the context does not contain the answer, say you couldn't find a specific answer.
+
+    WEB CONTEXT:
+    {context}
+
+    USER'S QUESTION:
+    {question}
+
+    ANSWER:
+    """
+
+    prompt_template_id = """
+    Anda adalah BramAI, seorang asisten AI.
+    Jawab PERTANYAAN PENGGUNA hanya berdasarkan KONTEKS WEB yang disediakan.
+    Jawab dengan ringkas dalam Bahasa Indonesia. Jika konteks tidak memuat jawaban, katakan Anda tidak dapat menemukan jawaban yang spesifik.
+
+    KONTEKS WEB:
+    {context}
+
+    PERTANYAAN PENGGUNA:
+    {question}
+
+    JAWABAN:
+    """
+
+    prompt = prompt_template_id.format(context=web_context, question=question) if language == "id" else prompt_template_en.format(context=web_context, question=question)
+
+    try:
+        payload = {
+            "model": config.LLM_MODEL,
+            "prompt": prompt,
+            "stream": True
+        }
+        
+        full_response = ""
+        with requests.post(config.OLLAMA_API_URL_GENERATE, json=payload, stream=True) as response:
+            response.raise_for_status()
+            for chunk in response.iter_lines():
+                if chunk:
+                    decoded_chunk = json.loads(chunk.decode('utf-8'))
+                    response_part = decoded_chunk.get("response", "")
+                    full_response += response_part
+                    if decoded_chunk.get("done"):
+                        break
+        return full_response.strip()
+    except Exception as e:
+        error_msg = f"Terjadi kesalahan saat memproses hasil web: {e}" if language == "id" else f"An error occurred while processing web results: {e}"
         return error_msg
 
 # Helper function moved here as it's coupled with the prompt generation
@@ -270,4 +340,4 @@ def format_history(history: list) -> str:
         ai_prefix = "BramAI"
         formatted_string += f"{user_prefix}: {turn['user']}\n"
         formatted_string += f"{ai_prefix}: {turn['ai']}\n"
-    return formatted_string.strip() 
+    return formatted_string.strip()

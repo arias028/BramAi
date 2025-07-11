@@ -22,50 +22,65 @@ def get_embedding(text, model_name):
 
 def create_smart_chunks(data):
     """
-    A smarter chunking function that tries to keep related information together.
-    It creates a single text block for each logical entity.
+    Creates highly specific, sentence-like chunks to drastically improve
+    semantic search accuracy and enable direct, factual answers.
     """
     chunks = []
-    
-    # Example of special handling for the management team
-    management_team = data.get("knowledge_base", {}).get("bina_team_profile", {}).get("management", {})
-    for role, details in management_team.items():
-        # Create one coherent chunk for each manager
-        chunk_text = f"Management Position: {role}, Name: {details.get('name')}"
-        if details.get('notes_en'):
-            chunk_text += f", Notes: {details.get('notes_en')}"
-        if details.get('notes_id'):
-            chunk_text += f", Catatan: {details.get('notes_id')}"
-        if details.get('origin'):
-            chunk_text += f", Origin: {details.get('origin')}"
-        chunks.append({"source": f"bina_team_profile.management.{role}", "content": chunk_text})
+    kb = data.get("knowledge_base", {})
+
+    # Company Profile & Owner (CRITICAL)
+    company_profile = kb.get("company_profile", {})
+    if company_profile:
+        # Find owner name from the management section
+        management = kb.get("bina_team_profile", {}).get("management", {})
+        for role, details in management.items():
+            if "owner of laskar buah" in details.get("notes_en", "").lower():
+                chunks.append({
+                    "source": f"bina_team_profile.management.{role}.owner",
+                    "content": f"Pemilik Laskar Buah adalah {details['name']}."
+                })
+                break
+
+        bina_info = company_profile.get("entity_hierarchy", {})
+        if bina_info.get("spinoff_year"):
+            chunks.append({
+                "source": "company_profile.entity_hierarchy.spinoff_year",
+                "content": f"BINA (Bram Innovation Network and Access) resmi didirikan sebagai spinoff pada tahun {bina_info['spinoff_year']}."
+            })
+        # Add explicit relationship chunk
+        chunks.append({
+            "source": "company_profile.entity_hierarchy.relationship",
+            "content": "BINA (Bram Innovation Network and Access) adalah perusahaan afiliasi dan merupakan spinoff dari Laskar Buah Group, sehingga keduanya adalah entitas yang berhubungan tetapi tidak sama."
+        })
+
+    # Team Profile
+    team_profile = kb.get("bina_team_profile", {})
+    management = team_profile.get("management", {})
+    for role, details in management.items():
+        role_title = role.replace('_', ' ').title()
+        chunks.append({
+            "source": f"bina_team_profile.management.{role}",
+            "content": f"Posisi {role_title} di BINA dipegang oleh {details['name']}."
+        })
+
+    # Workflows
+    workflows = kb.get("bina_operations", {})
+    if workflows and workflows.get("hardware_request_flow"):
+        chunks.append({
+            "source": "bina_operations.hardware_request_flow",
+            "content": f"Alur lengkap untuk permintaan hardware adalah: {workflows['hardware_request_flow']}"
+        })
+
+    # Store Locations (IMPORTANT)
+    store_locations = kb.get("group_operational_structure", {}).get("store_locations", [])
+    if store_locations:
+        locations_str = ", ".join(store_locations[:15]) + " dan lain-lain"
+        chunks.append({
+            "source": "group_operational_structure.store_locations",
+            "content": f"Beberapa lokasi toko Laskar Buah antara lain: {locations_str}."
+        })
         
-    # Example for developers
-    developers = data.get("knowledge_base", {}).get("bina_team_profile", {}).get("developers_and_specialists", [])
-    for dev in developers:
-        chunk_text = f"Developer: {dev.get('name')}, Role: {dev.get('role')}, Details: {dev.get('details')}"
-        chunks.append({"source": f"bina_team_profile.developers.{dev.get('name')}", "content": chunk_text})
-
-    # Add other key-value pairs as simple chunks
-    def fallback_chunker(d, path=""):
-        for key, value in d.items():
-            new_path = f"{path}.{key}" if path else key
-            if isinstance(value, dict):
-                # Avoid re-chunking sections we already handled
-                if key not in ['management', 'developers_and_specialists']:
-                    yield from fallback_chunker(value, new_path)
-            elif isinstance(value, list):
-                pass # You could add more list handling here if needed
-            else:
-                yield {"source": new_path, "content": f"{key}: {value}"}
-
-    # Run the fallback chunker on the whole document to catch everything else
-    all_chunks = set(c['content'] for c in chunks) # Use a set to avoid duplicates
-    for chunk in fallback_chunker(data):
-        if chunk['content'] not in all_chunks:
-            chunks.append(chunk)
-            all_chunks.add(chunk['content'])
-
+    print(f"Generated {len(chunks)} smart chunks.")
     return chunks
 
 def main():
@@ -93,7 +108,12 @@ def main():
         embedding = get_embedding(content, EMBEDDING_MODEL)
         
         if embedding:
-            vector_database.append({"source": chunk["source"], "content": content, "vector": embedding})
+            vector_database.append({
+                "source": chunk["source"], 
+                "content": content, 
+                "vector": embedding,
+                "created_at": 0.0  # Add a default old timestamp for base knowledge
+                })
             time.sleep(0.1)
         else:
             print(f"  - ⚠️ Failed to get embedding for chunk. Skipping.")

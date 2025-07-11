@@ -6,6 +6,15 @@ from langdetect import detect, LangDetectException
 from flask import Flask, request, jsonify
 import threading
 import time
+import sys
+import argparse
+import re
+from web_search import ddg_search # Import the renamed web search function
+
+GREETINGS = [
+    "halo", "selamat pagi", "selamat siang", "selamat sore", "selamat malam",
+    "pagi", "siang", "sore", "malam", "oi", "hi", "hello", "hey"
+]
 
 class BramAI:
     """
@@ -48,6 +57,9 @@ class BramAI:
         and returns the AI's response as a string. Enhanced with better context
         handling and more intelligent responses.
         """
+        if not user_input or not user_input.strip():
+            return "Mohon ketikkan pertanyaan atau perintah Anda."
+        
         response_str = ""
         language = self._detect_language(user_input)
         self.last_response_details["language"] = language
@@ -55,7 +67,15 @@ class BramAI:
         # Initialize variables that might be used later
         relevant_context = ""
         top_score = 0.0
+        sources = []
         
+        # Step 1: Handle simple greetings first for a fast response
+        cleaned_input = re.sub(r'[^\w\s]', '', user_input.lower().strip())
+        if cleaned_input in GREETINGS:
+            response_str = "Halo! Ada yang bisa saya bantu?" if language == "id" else "Hello! How can I help you?"
+            self.last_response_details["text"] = response_str
+            return response_str
+
         if user_input.lower().startswith(("learn:", "pelajari:")):
             fact_to_learn = user_input.split(":", 1)[1].strip()
             if fact_to_learn:
@@ -104,49 +124,70 @@ class BramAI:
             self.last_user_input = user_input
             question_embedding = llm_service.get_embedding(user_input, config.EMBEDDING_MODEL)
             
-            # Enhanced context retrieval with improved relevance
+            if question_embedding is None:
+                response_str = "Maaf, saya sedang kesulitan terhubung ke layanan inti saya. Pastikan Ollama sudah berjalan." if language == "id" else "I'm sorry, I'm having trouble connecting to my core services. Please make sure Ollama is running."
+                # Early exit if embedding service fails
+                self.last_response_details["text"] = response_str
+                return response_str
+
+            # Step 1: Check local knowledge base first
             chunk_result = self.kb.find_relevant_chunks(question_embedding, top_k=config.TOP_K) or ("", [], 0.0)
             relevant_context, sources, top_score = chunk_result
             
-            # Store understanding score for better response quality measurement
-            self.last_response_details["understanding_score"] = top_score
-            
-            if top_score < config.CLARIFICATION_THRESHOLD:
-                response_str = "Saya kurang paham maksud Anda. Bisakah Anda menjelaskan dengan cara lain?" if language == "id" else "I'm not quite sure what you mean. Could you try rephrasing the question?"
-            else:
-                # Check if we should use advanced reasoning for complex questions
-                if top_score > config.REASONING_THRESHOLD:
-                    # Use standard response generation
-                    ai_response = llm_service.generate_response(
-                        user_input, 
-                        relevant_context, 
-                        language, 
-                        self.conversation_history, 
-                        sources
-                    )
-                else:
-                    # Use advanced reasoning for complex questions
-                    ai_response = llm_service.answer_with_reasoning(
-                        user_input,
-                        relevant_context,
-                        language
-                    )
+            # Step 2: Decide if local knowledge is sufficient or if web search is needed
+            if top_score < config.WEB_SEARCH_THRESHOLD:
+                # JIKA SKOR RENDAH, LANGSUNG CARI DI INTERNET
+                print(f"⚠️ Pengetahuan lokal kurang memadai (skor: {top_score:.2f}). Mencari di internet...")
+                try:
+                    # Ensure the query is clean user input
+                    search_results = ddg_search(query=self.last_user_input, max_results=5)
+                    
+                    if not search_results or not search_results.results:
+                        print("❌ Tidak ada hasil yang ditemukan dari internet.")
+                        ai_response = "Maaf, saya tidak dapat menemukan informasi dari internet saat ini."
+                    else:
+                        print(f"✅ Ditemukan {len(search_results.results)} hasil dari internet. Merangkum jawaban...")
+                        web_context = " ".join([result.body for result in search_results.results])
+                        
+                        ai_response = llm_service.generate_response_from_web(user_input, web_context, language)
+                        
+                        if ai_response and "tidak dapat menemukan jawaban" not in ai_response:
+                            # Self-learning: learn the new fact from the web
+                            print("🧠 Mempelajari informasi baru dari internet...")
+                            learned_fact = f"Ketika ditanya '{user_input}', jawabannya adalah: {ai_response}"
+                            self.kb.learn_new_fact(learned_fact, source=f"web_search: {search_results.results[0].url}")
+                        else:
+                             ai_response = "Saya menemukan beberapa informasi, tetapi kesulitan untuk merangkum jawaban yang jelas."
 
-                if ai_response:
-                    response_str = ai_response
-                    # Store enhanced context for better conversation tracking
-                    self.conversation_history.append({
-                        "user": user_input, 
-                        "ai": ai_response,
-                        "context": relevant_context,
-                        "language": language,
-                        "timestamp": time.time(),
-                        "understanding_score": top_score
-                    })
-                    if len(self.conversation_history) > config.CONVERSATION_HISTORY_LENGTH:
-                        self.conversation_history.pop(0)
-                else:
-                    response_str = "Maaf, saya tidak bisa menghasilkan jawaban saat ini." if language == "id" else "I am unable to generate a response at this moment."
+                except Exception as e:
+                    print(f"❌ Terjadi kesalahan saat mencari di web: {e}")
+                    ai_response = "Maaf, saya mengalami masalah saat mencoba mencari informasi di internet."
+            else:
+                # JIKA SKOR TINGGI, GUNAKAN BASIS DATA LOKAL
+                print("✅ Menjawab dari basis data pengetahuan lokal.")
+                ai_response = llm_service.generate_response(
+                    user_input, 
+                    relevant_context, 
+                    language, 
+                    self.conversation_history, 
+                    sources
+                )
+
+            if ai_response:
+                response_str = ai_response
+                # Store enhanced context for better conversation tracking
+                self.conversation_history.append({
+                    "user": user_input, 
+                    "ai": ai_response,
+                    "context": relevant_context,
+                    "language": language,
+                    "timestamp": time.time(),
+                    "understanding_score": top_score
+                })
+                if len(self.conversation_history) > config.CONVERSATION_HISTORY_LENGTH:
+                    self.conversation_history.pop(0)
+            else:
+                response_str = "Maaf, saya tidak bisa menghasilkan jawaban saat ini." if language == "id" else "I am unable to generate a response at this moment."
         
         # Store detailed response info for better correction handling
         self.last_response_details = {
@@ -159,6 +200,44 @@ class BramAI:
         return response_str
 
 
+def run_terminal_chat(ai):
+    """
+    Run an interactive terminal chat with BramAI.
+    """
+    language = config.DEFAULT_LANGUAGE
+    welcome_msg = "Selamat datang di BramAI! Ketik 'keluar' untuk keluar." if language == "id" else "Welcome to BramAI! Type 'exit' to quit."
+    print(f"\n🤖 {welcome_msg}\n")
+    
+    while True:
+        try:
+            # Get input with nice prompt based on language
+            prompt = "Anda: " if language == "id" else "You: "
+            user_input = input(prompt)
+            
+            # Check for exit commands
+            if user_input.lower() in ["exit", "quit", "keluar", "selesai"]:
+                goodbye_msg = "Terima kasih telah menggunakan BramAI! Sampai jumpa." if language == "id" else "Thank you for using BramAI! Goodbye."
+                print(f"🤖 {goodbye_msg}")
+                break
+            
+            # Process the input and get the response
+            response = ai.process_input(user_input)
+            
+            # Update language for next prompt
+            language = ai.last_response_details.get("language", config.DEFAULT_LANGUAGE)
+            
+            # Print the response
+            ai_prefix = "BramAI: "
+            print(f"{ai_prefix}{response}\n")
+            
+        except KeyboardInterrupt:
+            print("\n\nExiting BramAI terminal chat...")
+            break
+        except Exception as e:
+            print(f"\n❌ Error: {e}")
+            continue
+
+
 app = Flask(__name__)
 
 # Initialize the AI just once
@@ -168,7 +247,6 @@ if not hasattr(kb, 'client') or not kb.client:
     exit()
     
 ai = BramAI(knowledge_base=kb)
-print("🤖 BramAI siap menerima permintaan web.")
 
 @app.route('/webhook', methods=['POST'])
 def handle_message():
@@ -192,7 +270,21 @@ def run_flask_app():
     app.run(host='0.0.0.0', port=5001)
 
 if __name__ == "__main__":
-    # Run Flask in a separate thread so it doesn't block other code if needed
-    flask_thread = threading.Thread(target=run_flask_app)
-    flask_thread.start()
-    # The original main loop can be removed or repurposed if you only want to use the web interface.
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="BramAI - Super Indonesian AI Assistant")
+    parser.add_argument("--web", action="store_true", help="Run as web service with Flask")
+    parser.add_argument("--terminal", action="store_true", help="Run in terminal mode")
+    args = parser.parse_args()
+    
+    # Default to terminal mode if no arguments provided
+    if not args.web and not args.terminal:
+        args.terminal = True
+        
+    if args.web:
+        print("🤖 BramAI siap menerima permintaan web.")
+        # Run Flask in a separate thread so it doesn't block other code if needed
+        flask_thread = threading.Thread(target=run_flask_app)
+        flask_thread.start()
+    
+    if args.terminal:
+        run_terminal_chat(ai)
