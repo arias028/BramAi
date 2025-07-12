@@ -20,67 +20,56 @@ def get_embedding(text, model_name):
         print(f"❌ Error connecting to Ollama: {e}")
         return None
 
-def create_smart_chunks(data):
+def create_recursive_chunks(data_node, path_prefix=""):
     """
-    Creates highly specific, sentence-like chunks to drastically improve
-    semantic search accuracy and enable direct, factual answers.
+    Recursively walks through a JSON/dict structure and generates detailed,
+    context-aware text chunks for embedding.
     """
     chunks = []
-    kb = data.get("knowledge_base", {})
+    # Base case: if the node is a simple value, create a chunk
+    if isinstance(data_node, (str, int, float, bool)):
+        if path_prefix:
+            # Clean up the path for readability
+            readable_path = path_prefix.replace('_', ' ').replace('.', ' -> ')
+            content = f"Regarding '{readable_path}', the value is: {data_node}."
+            chunks.append({"source": path_prefix, "content": content})
+        return chunks
 
-    # Company Profile & Owner (CRITICAL)
-    company_profile = kb.get("company_profile", {})
-    if company_profile:
-        # Find owner name from the management section
-        management = kb.get("bina_team_profile", {}).get("management", {})
-        for role, details in management.items():
-            if "owner of laskar buah" in details.get("notes_en", "").lower():
-                chunks.append({
-                    "source": f"bina_team_profile.management.{role}.owner",
-                    "content": f"Pemilik Laskar Buah adalah {details['name']}."
-                })
-                break
+    # Recursive step for dictionaries
+    if isinstance(data_node, dict):
+        for key, value in data_node.items():
+            # Construct the new path for the next level of recursion
+            new_path = f"{path_prefix}.{key}" if path_prefix else key
 
-        bina_info = company_profile.get("entity_hierarchy", {})
-        if bina_info.get("spinoff_year"):
-            chunks.append({
-                "source": "company_profile.entity_hierarchy.spinoff_year",
-                "content": f"BINA (Bram Innovation Network and Access) resmi didirikan sebagai spinoff pada tahun {bina_info['spinoff_year']}."
-            })
-        # Add explicit relationship chunk
-        chunks.append({
-            "source": "company_profile.entity_hierarchy.relationship",
-            "content": "BINA (Bram Innovation Network and Access) adalah perusahaan afiliasi dan merupakan spinoff dari Laskar Buah Group, sehingga keduanya adalah entitas yang berhubungan tetapi tidak sama."
-        })
+            # Special handling for certain keys to create more natural sentences
+            if key == 'name' and 'content' not in str(value): # Avoid re-chunking content
+                parent_path_parts = path_prefix.split('.')
+                context = parent_path_parts[-1].replace('_', ' ') if parent_path_parts else "entity"
+                content = f"The name for the {context} is {value}."
+                chunks.append({"source": new_path, "content": content})
 
-    # Team Profile
-    team_profile = kb.get("bina_team_profile", {})
-    management = team_profile.get("management", {})
-    for role, details in management.items():
-        role_title = role.replace('_', ' ').title()
-        chunks.append({
-            "source": f"bina_team_profile.management.{role}",
-            "content": f"Posisi {role_title} di BINA dipegang oleh {details['name']}."
-        })
+            elif key == 'content':
+                # If a key is 'content', treat its value as the primary chunk text
+                chunks.append({"source": path_prefix, "content": str(value)})
 
-    # Workflows
-    workflows = kb.get("bina_operations", {})
-    if workflows and workflows.get("hardware_request_flow"):
-        chunks.append({
-            "source": "bina_operations.hardware_request_flow",
-            "content": f"Alur lengkap untuk permintaan hardware adalah: {workflows['hardware_request_flow']}"
-        })
+            else:
+                chunks.extend(create_recursive_chunks(value, new_path))
 
-    # Store Locations (IMPORTANT)
-    store_locations = kb.get("group_operational_structure", {}).get("store_locations", [])
-    if store_locations:
-        locations_str = ", ".join(store_locations[:15]) + " dan lain-lain"
-        chunks.append({
-            "source": "group_operational_structure.store_locations",
-            "content": f"Beberapa lokasi toko Laskar Buah antara lain: {locations_str}."
-        })
-        
-    print(f"Generated {len(chunks)} smart chunks.")
+    # Recursive step for lists
+    elif isinstance(data_node, list):
+        for i, item in enumerate(data_node):
+            # Create a chunk for each item in the list
+            new_path = f"{path_prefix}[{i}]"
+
+            # If the item in the list is a simple value (like a store name)
+            if isinstance(item, str):
+                singular_path = path_prefix.replace('_', ' ').rstrip('s') # e.g., 'store_locations' -> 'store location'
+                content = f"A known {singular_path} is: {item}."
+                chunks.append({"source": new_path, "content": content})
+            else:
+                # If the item is a dictionary or another list, recurse into it
+                chunks.extend(create_recursive_chunks(item, new_path))
+
     return chunks
 
 def main():
@@ -95,24 +84,26 @@ def main():
         print(f"❌ Error loading source file: {e}")
         return
 
-    print("🧠 Creating smart chunks of data...")
-    text_chunks = create_smart_chunks(knowledge_data)
-    print(f"✅ Created {len(text_chunks)} smart chunks.")
+    print("🧠 Creating recursive chunks of data from the entire knowledge base...")
+    # Call the new recursive function
+    text_chunks = create_recursive_chunks(knowledge_data)
+    print(f"✅ Created {len(text_chunks)} granular chunks.")
 
+    # The rest of the main function remains the same...
     vector_database = []
     print(f"✨ Generating new embeddings using model '{EMBEDDING_MODEL}'...")
-    
+
     for i, chunk in enumerate(text_chunks):
         content = chunk["content"]
-        print(f"  - Processing chunk {i+1}/{len(text_chunks)}...")
+        print(f"  - Processing chunk {i+1}/{len(text_chunks)}: {content[:70]}...")
         embedding = get_embedding(content, EMBEDDING_MODEL)
-        
+
         if embedding:
             vector_database.append({
                 "source": chunk["source"], 
                 "content": content, 
                 "vector": embedding,
-                "created_at": 0.0  # Add a default old timestamp for base knowledge
+                "created_at": 0.0
                 })
             time.sleep(0.1)
         else:
@@ -127,6 +118,7 @@ def main():
         print(f"❌ Error saving output file: {e}")
 
     print("\n--- Smart Vector Database Creation Complete! ---")
+    print("IMPORTANT: Run `migrate_to_db.py` to upload the new vectors to MongoDB.")
 
 if __name__ == "__main__":
     main()

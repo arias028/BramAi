@@ -23,6 +23,25 @@ def generate_response(question, context, language, conversation_history, sources
     history_str = format_history(conversation_history)
     
     # New, more robust prompt templates to fix language and personality issues.
+    prompt_template_id = """
+    Anda adalah BramAI, asisten AI dari BINA yang cerdas dan membantu.
+
+    ATURAN PALING PENTING:
+    1.  JAWAB BERDASARKAN KONTEKS YANG DISEDIAKAN. Jika beberapa potongan konteks relevan, sintesiskan informasi tersebut menjadi satu jawaban yang koheren.
+    2.  JAWAB DENGAN JELAS DAN LANGSUNG KE INTI PERTANYAAN.
+    3.  Jika informasi yang diminta TIDAK ADA SECARA EKSPLISIT di dalam KONTEKS, jawab HANYA dengan kalimat: "Maaf, informasi tersebut tidak ada di basis data saya."
+    4.  JANGAN mengulangi pertanyaan pengguna.
+
+    KONTEKS:
+    {context}
+
+    PERTANYAAN:
+    {question}
+
+    JAWABAN ANDA:
+    """
+    
+    # We will not modify the english prompt for now, as the focus is on Indonesian.
     prompt_template_en = """
     You are BramAI, an AI assistant from BINA.
 
@@ -41,24 +60,6 @@ def generate_response(question, context, language, conversation_history, sources
     YOUR ANSWER:
     """
 
-    prompt_template_id = """
-    Anda adalah BramAI, asisten AI dari BINA.
-
-    ATURAN PALING PENTING:
-    1.  JAWAB HANYA BERDASARKAN SATU BAGIAN KONTEKS YANG PALING RELEVAN. JANGAN PERNAH MENGGABUNGKAN INFORMASI DARI BEBERAPA KONTEKS YANG BERBEDA.
-    2.  JAWAB DENGAN SINGKAT DAN LANGSUNG KE INTI PERTANYAAN.
-    3.  Jika informasi yang diminta TIDAK ADA SECARA EKSPLISIT di dalam KONTEKS, jawab HANYA dengan: "Maaf, saya tidak memiliki informasi tersebut."
-    4.  Jangan mengulang pertanyaan pengguna.
-
-    KONTEKS:
-    {context}
-
-    PERTANYAAN:
-    {question}
-
-    JAWABAN ANDA:
-    """
-    
     if language == 'id':
         prompt = prompt_template_id.format(history=history_str, context=context, question=question)
     else:

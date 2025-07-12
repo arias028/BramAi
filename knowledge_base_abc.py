@@ -33,25 +33,55 @@ class KnowledgeBase(ABC):
         pass
 
     @abstractmethod
-    def forget_fact(self, fact_text):
+    def propose_fact_to_forget(self, fact_text_to_find: str):
         """
-        Removes a fact from the knowledge base based on semantic similarity.
+        Finds a fact similar to the provided text and returns its details for confirmation.
         
         Parameters:
-        - fact_text: Text description of the fact to forget
+        - fact_text_to_find: Text description of the fact to find
+        
+        Returns:
+        - Dictionary with document_id and content_to_forget, or None if not found
         """
         pass
 
     @abstractmethod
-    def handle_correction(self, last_question, correction_text, last_context=None):
+    def confirm_forget(self, document_id: str):
         """
-        Corrects a fact in the knowledge base.
-        It can use the context from the last response to be more precise.
+        Removes a fact from the knowledge base by its document ID after confirmation.
+        
+        Parameters:
+        - document_id: The ID of the document to delete
+        
+        Returns:
+        - Boolean indicating success or failure
+        """
+        pass
+
+    @abstractmethod
+    def propose_correction_and_get_original(self, last_question: str):
+        """
+        Finds a fact related to the last question and returns its details for correction.
         
         Parameters:
         - last_question: The previous question that triggered the incorrect answer
-        - correction_text: The correction text provided by the user
-        - last_context: The context used for the last response (optional)
+        
+        Returns:
+        - Dictionary with document_id and original_content, or None if not found
+        """
+        pass
+        
+    @abstractmethod
+    def confirm_correction(self, document_id: str, new_fact_text: str):
+        """
+        Updates a fact in the knowledge base by its document ID after confirmation.
+        
+        Parameters:
+        - document_id: The ID of the document to update
+        - new_fact_text: The corrected text to replace the original fact
+        
+        Returns:
+        - Boolean indicating success or failure
         """
         pass
         

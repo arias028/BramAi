@@ -51,6 +51,35 @@ class BramAI:
             # If detection fails, default to Indonesian
             return 'id'
 
+    def web_search_and_respond(self, query: str, language: str) -> str:
+        """
+        Handles the web search, response generation, and self-learning process.
+        """
+        try:
+            # Ensure the query is clean user input for the highest quality search
+            search_results = ddg_search(query=query, max_results=5)
+            
+            if not search_results or not search_results.results:
+                print("❌ Tidak ada hasil yang ditemukan dari internet.")
+                return "Maaf, saya tidak dapat menemukan informasi dari internet saat ini."
+            
+            print(f"✅ Ditemukan {len(search_results.results)} hasil dari internet. Merangkum jawaban...")
+            web_context = " ".join([result.body for result in search_results.results])
+            
+            ai_response = llm_service.generate_response_from_web(query, web_context, language)
+            
+            if ai_response and "tidak dapat menemukan jawaban" not in ai_response:
+                print("🧠 Mempelajari informasi baru dari internet...")
+                learned_fact = f"Ketika ditanya '{query}', jawabannya adalah: {ai_response}"
+                self.kb.learn_new_fact(learned_fact, source=f"web_search: {search_results.results[0].url}")
+                return ai_response
+            else:
+                return "Saya menemukan beberapa informasi, tetapi kesulitan untuk merangkum jawaban yang jelas."
+
+        except Exception as e:
+            print(f"❌ Terjadi kesalahan saat mencari di web: {e}")
+            return "Maaf, saya mengalami masalah saat mencoba mencari informasi di internet."
+
     def process_input(self, user_input: str) -> str:
         """
         Processes the user's input, whether it's a command or a question,
@@ -64,130 +93,75 @@ class BramAI:
         language = self._detect_language(user_input)
         self.last_response_details["language"] = language
         
+        # ---> BLOK KRITIS BARU UNTUK COMMAND OVERRIDE <---
+        search_keywords = ["cari di internet", "carikan saya", "search for", "find me", "tolong carikan"]
+        user_input_lower = user_input.lower()
+
+        for keyword in search_keywords:
+            if keyword in user_input_lower:
+                # Ekstrak query yang bersih dari perintah
+                search_query = re.sub(keyword, '', user_input, flags=re.IGNORECASE).strip()
+                print(f"🔍 Perintah pencarian eksplisit terdeteksi. Mencari: '{search_query}'")
+                
+                # Jika query kosong setelah dihapus (misal: "tolong carikan"), gunakan input sebelumnya
+                if not search_query:
+                    search_query = self.last_user_input
+                
+                return self.web_search_and_respond(search_query, language)
+        # ---> AKHIR BLOK KRITIS <---
+
         # Initialize variables that might be used later
         relevant_context = ""
         top_score = 0.0
         sources = []
         
         # Step 1: Handle simple greetings first for a fast response
-        cleaned_input = re.sub(r'[^\w\s]', '', user_input.lower().strip())
-        if cleaned_input in GREETINGS:
+        # More flexible greeting detection - check if ANY greeting word is in the input
+        any_greeting_word_found = any(word in user_input.lower().split() for word in GREETINGS)
+        if any_greeting_word_found:
             response_str = "Halo! Ada yang bisa saya bantu?" if language == "id" else "Hello! How can I help you?"
             self.last_response_details["text"] = response_str
             return response_str
 
-        if user_input.lower().startswith(("learn:", "pelajari:")):
-            fact_to_learn = user_input.split(":", 1)[1].strip()
-            if fact_to_learn:
-                if self.kb.learn_new_fact(fact_to_learn):
-                    response_str = "✅ Saya sudah mempelajari informasi baru ini." if language == "id" else "✅ Understood! I've learned that new information."
-                else:
-                    response_str = "❌ Maaf, saya kesulitan mempelajari itu. Mungkin masalah dengan layanan embedding." if language == "id" else "❌ I'm sorry, I had trouble learning that. It might be an issue with the embedding service."
-            else:
-                response_str = "🤖 Mohon berikan informasi yang ingin saya pelajari setelah 'pelajari:' atau 'learn:'." if language == "id" else "🤖 Please provide the information you want me to learn after 'learn:'."
-        
-        elif user_input.lower().startswith(("forget:", "lupakan:")):
-            fact_to_forget = user_input.split(":", 1)[1].strip()
-            if fact_to_forget:
-                self.kb.forget_fact(fact_to_forget)
-                response_str = "🔎 Sedang memproses permintaan untuk melupakan informasi." if language == "id" else "🔎 Processing your request to forget."
-            else:
-                response_str = "🤖 Mohon berikan informasi yang ingin saya lupakan setelah 'lupakan:' atau 'forget:'." if language == "id" else "🤖 Please provide the information you want me to forget after 'forget:'."
-
-        elif user_input.lower().startswith(("koreksi:", "correct:")):
-            fact_to_correct = user_input.split(":", 1)[1].strip()
-            if fact_to_correct:
-                # Enhanced correction with last context and understanding scoring
-                last_context = self.last_response_details.get("context_chunks", [])
-                self.kb.handle_correction(self.last_user_input, fact_to_correct, last_context)
-                response_str = "✍️ Sedang memproses koreksi berdasarkan konteks terakhir." if language == "id" else "✍️ Processing your correction based on the last context."
-            else:
-                response_str = "🤖 Mohon berikan informasi yang benar setelah 'koreksi:' atau 'correct:'." if language == "id" else "🤖 Please provide the correct information after 'correct:'."
-        
-        elif user_input.lower().startswith(("ringkas:", "summarize:")):
-            text_to_summarize = user_input.split(":", 1)[1].strip()
-            if text_to_summarize:
-                # Pass language to summarize in the right language
-                llm_service.summarize_text(text_to_summarize, language)
-                response_str = "Ringkasan sedang dibuat." if language == "id" else "Summary is being generated."
-            else:
-                response_str = "🤖 Mohon berikan teks yang ingin saya ringkas setelah 'ringkas:' atau 'summarize:'." if language == "id" else "🤖 Please provide the text you want me to summarize after 'summarize:'."
-
-        elif user_input.lower().startswith(("analisis:", "analyze:")):
-            text_to_analyze = user_input.split(":", 1)[1].strip()
-            if text_to_analyze:
-                response_str = llm_service.analyze_sentiment(text_to_analyze, language)
-            else:
-                response_str = "🤖 Mohon berikan teks yang ingin saya analisis setelah 'analisis:' atau 'analyze:'." if language == "id" else "🤖 Please provide the text you want me to analyze after 'analyze:'."
-
-        else: # It's a regular question
-            self.last_user_input = user_input
-            question_embedding = llm_service.get_embedding(user_input, config.EMBEDDING_MODEL)
+        # The rest of the original logic for checking local KB
+        self.last_user_input = user_input
+        question_embedding = llm_service.get_embedding(user_input, config.EMBEDDING_MODEL)
             
-            if question_embedding is None:
-                response_str = "Maaf, saya sedang kesulitan terhubung ke layanan inti saya. Pastikan Ollama sudah berjalan." if language == "id" else "I'm sorry, I'm having trouble connecting to my core services. Please make sure Ollama is running."
-                # Early exit if embedding service fails
-                self.last_response_details["text"] = response_str
-                return response_str
+        if question_embedding is None:
+            response_str = "Maaf, saya sedang kesulitan terhubung ke layanan inti saya. Pastikan Ollama sudah berjalan." if language == "id" else "I'm sorry, I'm having trouble connecting to my core services. Please make sure Ollama is running."
+            # Early exit if embedding service fails
+            self.last_response_details["text"] = response_str
+            return response_str
 
-            # Step 1: Check local knowledge base first
-            chunk_result = self.kb.find_relevant_chunks(question_embedding, top_k=config.TOP_K) or ("", [], 0.0)
-            relevant_context, sources, top_score = chunk_result
+        # Step 1: Check local knowledge base first
+        chunk_result = self.kb.find_relevant_chunks(question_embedding, top_k=config.TOP_K) or ("", [], 0.0)
+        relevant_context, sources, top_score = chunk_result
             
-            # Step 2: Decide if local knowledge is sufficient or if web search is needed
-            if top_score < config.WEB_SEARCH_THRESHOLD:
-                # JIKA SKOR RENDAH, LANGSUNG CARI DI INTERNET
-                print(f"⚠️ Pengetahuan lokal kurang memadai (skor: {top_score:.2f}). Mencari di internet...")
-                try:
-                    # Ensure the query is clean user input
-                    search_results = ddg_search(query=self.last_user_input, max_results=5)
-                    
-                    if not search_results or not search_results.results:
-                        print("❌ Tidak ada hasil yang ditemukan dari internet.")
-                        ai_response = "Maaf, saya tidak dapat menemukan informasi dari internet saat ini."
-                    else:
-                        print(f"✅ Ditemukan {len(search_results.results)} hasil dari internet. Merangkum jawaban...")
-                        web_context = " ".join([result.body for result in search_results.results])
-                        
-                        ai_response = llm_service.generate_response_from_web(user_input, web_context, language)
-                        
-                        if ai_response and "tidak dapat menemukan jawaban" not in ai_response:
-                            # Self-learning: learn the new fact from the web
-                            print("🧠 Mempelajari informasi baru dari internet...")
-                            learned_fact = f"Ketika ditanya '{user_input}', jawabannya adalah: {ai_response}"
-                            self.kb.learn_new_fact(learned_fact, source=f"web_search: {search_results.results[0].url}")
-                        else:
-                             ai_response = "Saya menemukan beberapa informasi, tetapi kesulitan untuk merangkum jawaban yang jelas."
-
-                except Exception as e:
-                    print(f"❌ Terjadi kesalahan saat mencari di web: {e}")
-                    ai_response = "Maaf, saya mengalami masalah saat mencoba mencari informasi di internet."
-            else:
-                # JIKA SKOR TINGGI, GUNAKAN BASIS DATA LOKAL
-                print("✅ Menjawab dari basis data pengetahuan lokal.")
-                ai_response = llm_service.generate_response(
-                    user_input, 
-                    relevant_context, 
-                    language, 
-                    self.conversation_history, 
-                    sources
-                )
-
-            if ai_response:
-                response_str = ai_response
-                # Store enhanced context for better conversation tracking
-                self.conversation_history.append({
-                    "user": user_input, 
-                    "ai": ai_response,
-                    "context": relevant_context,
-                    "language": language,
-                    "timestamp": time.time(),
-                    "understanding_score": top_score
-                })
-                if len(self.conversation_history) > config.CONVERSATION_HISTORY_LENGTH:
-                    self.conversation_history.pop(0)
-            else:
-                response_str = "Maaf, saya tidak bisa menghasilkan jawaban saat ini." if language == "id" else "I am unable to generate a response at this moment."
+        # Step 2: Decide if local knowledge is sufficient or if web search is needed
+        if top_score < config.WEB_SEARCH_THRESHOLD:
+            # JIKA SKOR RENDAH, LANGSUNG CARI DI INTERNET
+            print(f"⚠️ Pengetahuan lokal kurang memadai (skor: {top_score:.2f}). Mencari di internet...")
+            ai_response = self.web_search_and_respond(user_input, language)
+        else:
+            # JIKA SKOR TINGGI, GUNAKAN BASIS DATA LOKAL
+            print("✅ Menjawab dari basis data pengetahuan lokal (Percobaan Pertama).")
+            ai_response = llm_service.generate_response(
+                user_input, 
+                relevant_context, 
+                language, 
+                self.conversation_history, 
+                sources
+            )
+            
+            # NEW FALLBACK: Check if the AI itself couldn't find the answer
+            if ai_response and "informasi tersebut tidak ada di basis data saya" in ai_response:
+                print("⚠️ Jawaban tidak ditemukan di konteks lokal. Memulai pencarian web sebagai fallback...")
+                ai_response = self.web_search_and_respond(user_input, language)
+        
+        if ai_response:
+            response_str = ai_response
+        else:
+            response_str = "Maaf, saya tidak dapat menemukan atau menghasilkan jawaban untuk pertanyaan Anda saat ini." if language == "id" else "I am unable to generate a response at this moment."
         
         # Store detailed response info for better correction handling
         self.last_response_details = {
@@ -264,6 +238,67 @@ def handle_message():
 
     # Return the AI's response
     return jsonify({'reply': ai_response})
+
+@app.route('/propose_correction', methods=['POST'])
+def propose_correction_endpoint():
+    data = request.json
+    if data is None:
+        return jsonify({'error': 'Request must be a JSON object.'}), 400
+    last_question = data.get('last_question')
+    if not last_question:
+        return jsonify({'error': 'last_question is required'}), 400
+
+    proposal = ai.kb.propose_correction_and_get_original(last_question)
+    if proposal:
+        return jsonify(proposal)
+    else:
+        return jsonify({'error': 'Could not find a relevant fact to correct'}), 404
+
+@app.route('/confirm_correction', methods=['POST'])
+def confirm_correction_endpoint():
+    data = request.json
+    if data is None:
+        return jsonify({'error': 'Request must be a JSON object.'}), 400
+    document_id = data.get('document_id')
+    new_text = data.get('new_text')
+    if not all([document_id, new_text]):
+        return jsonify({'error': 'document_id and new_text are required'}), 400
+
+    success = ai.kb.confirm_correction(document_id, new_text)
+    if success:
+        return jsonify({'status': 'success', 'message': 'Knowledge base updated.'})
+    else:
+        return jsonify({'error': 'Failed to update the fact in the database'}), 500
+
+@app.route('/propose_forget', methods=['POST'])
+def propose_forget_endpoint():
+    data = request.json
+    if data is None:
+        return jsonify({'error': 'Request must be a JSON object.'}), 400
+    fact_text = data.get('fact_text')
+    if not fact_text:
+        return jsonify({'error': 'fact_text is required'}), 400
+
+    proposal = ai.kb.propose_fact_to_forget(fact_text)
+    if proposal:
+        return jsonify(proposal)
+    else:
+        return jsonify({'error': 'Could not find a relevant fact to forget'}), 404
+
+@app.route('/confirm_forget', methods=['POST'])
+def confirm_forget_endpoint():
+    data = request.json
+    if data is None:
+        return jsonify({'error': 'Request must be a JSON object.'}), 400
+    document_id = data.get('document_id')
+    if not document_id:
+        return jsonify({'error': 'document_id is required'}), 400
+
+    success = ai.kb.confirm_forget(document_id)
+    if success:
+        return jsonify({'status': 'success', 'message': 'Fact has been forgotten.'})
+    else:
+        return jsonify({'error': 'Failed to delete the fact from the database'}), 500
 
 def run_flask_app():
     # You can choose a different port if 5000 is in use

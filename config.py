@@ -1,4 +1,7 @@
-MONGO_URI = "mongodb://localhost:27017/"
+# The MONGO_URI is now updated to your new MongoDB Atlas connection string.
+# Make sure this is the only line you change here.
+MONGO_URI = "mongodb+srv://bramteknologi:jhWg8zK70vxLpJgJ@bramai.ivqn9h3.mongodb.net/?retryWrites=true&w=majority&appName=BramAi"
+
 DATABASE_NAME = "BramAi"
 COLLECTION_NAME = "knowledge"
 OLLAMA_API_URL_GENERATE = "http://127.0.0.1:11434/api/generate"
@@ -12,4 +15,4 @@ CLARIFICATION_THRESHOLD = 0.5
 WEB_SEARCH_THRESHOLD = 0.82  # Increased from 0.7 to be stricter
 DEFAULT_LANGUAGE = "id"  # Set Indonesian as default language
 TEMPERATURE = 0.7  # Default creativity level
-REASONING_THRESHOLD = 0.75  # Threshold to use advanced reasoning for complex questions 
+REASONING_THRESHOLD = 0.75  # Threshold to use advanced reasoning for complex questions
